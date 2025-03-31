@@ -1,0 +1,8 @@
+# 의존성 패키지 무시
+node_modules
+# 빌드 결과물 무시
+.next
+dist
+build
+# 패키지 락 파일 무시 (자동 생성되므로)
+pnpm-lock.yaml
