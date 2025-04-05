@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 데이터베이스 서비스
+  postgres:
+    image: postgres:latest
+    container_name: post-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - post-network
+
+  # API 서버 (NestJS)
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: post-api
+    ports:
+      - "3001:3000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postdb?schema=public
+      - NODE_ENV=development
+    volumes:
+      - ./apps/api/src:/app/src
+    networks:
+      - post-network
+
+  # 웹 프론트엔드 (Next.js)
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: post-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:3000
+      - NODE_ENV=development
+    volumes:
+      - ./apps/web/src:/app/src
+      - ./apps/web/public:/app/public
+    networks:
+      - post-network
+
+volumes:
+  postgres-data:
+  node_modules_api:
+  node_modules_web:
+
+networks:
+  post-network:
+    driver: bridge
