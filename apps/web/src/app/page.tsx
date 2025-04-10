@@ -1,9 +1,9 @@
-import Test from './components/Test';
-
 export default function Home() {
   return (
     <>
-      <Test />
+      {/* <Test /> */}
+      <div>hello</div>
+      <div>hello</div>
     </>
   );
 }
